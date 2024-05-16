@@ -47,10 +47,21 @@ def _():
     # if the values are not a match, the user is sent back to the login page endpoint
     return redirect("/login")
 
+@get("/logout")
+def _():
+    user_session_id = request.get_cookie("user_session_id")
+    sessions.pop(user_session_id)
+    print("#"*30)
+    print(sessions)
+    return redirect("/login")
+
 @get("/admin")
 @view("admin")
 def _():
+    response.set_header("Cache-Control", "no-cache, no-store, must-revalidate")
     user_session_id = request.get_cookie("user_session_id")
+    if user_session_id not in sessions:
+        return redirect("/login")
     user = sessions[user_session_id]
     return dict(user=user)
 
